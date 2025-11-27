@@ -1,0 +1,77 @@
+import { X } from "lucide-react";
+import {editProduto} from "../../../service/produtoService"
+import { useState } from "react";
+
+const EditModal = ({ aberto, fechar, produto, recarregarProduto }) => {
+  if (!aberto) return null;
+
+  const [form, setForm] = useState({
+    id: produto.id,
+    nome: produto.nome,
+    quantidade: produto.quantidade,
+    valor: produto.valor,
+    unidade_medida: produto.unidade_medida,
+    empresa_id : produto.empresaId
+  });
+
+  
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await editProduto(form);
+
+      await recarregarProduto();
+
+      fechar();
+    } catch (err) {
+      console.log(err);
+      fechar()
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50  flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-xl shadow-xl w-[400px] relative space-y-8">
+        <div className="">
+           <button 
+              className="absolute top-2 right-3 text-xl font-bold hover:bg-stone-500 cursor-pointer p-2  rounded-full"
+              onClick={fechar}
+            >
+              <X size={20}/>
+            </button>
+            <h1 className="w-full text-center text-xl font-semibold">Editar produto</h1>
+        </div>
+        <div>
+          <form onSubmit={handleSubmit} className="flex flex-col">
+
+            <label htmlFor="" className="ml-3 mb-3" >Nome</label>
+            <input onChange={handleChange} value={produto.nome} type="text" name="nome" className="mb-4 rounded-xl select-none px-4 py-3 bg-white shadow border border-black"/>
+
+            <label htmlFor="" className="ml-3 mb-3">Quantidade</label>
+            <input onChange={handleChange} value={produto.quantidade} type="number" name="quantidade" className="mb-4 rounded-xl select-none px-4 py-3 bg-white shadow border border-black"/>
+
+            <label htmlFor="" className="ml-3 mb-3">Preço (R$)</label>
+            <input onChange={handleChange} value={produto.preco} type="number" name="quantidade" className="mb-4 rounded-xl select-none px-4 py-3 bg-white shadow border border-black"/>
+
+            <label htmlFor="" className="ml-3 mb-3">Unidade de medida</label>
+            <input onChange={handleChange} value={produto.unidade_medida} type="text" name="quantidade" className="mb-4 rounded-xl select-none px-4 py-3 bg-white shadow border border-black"/>
+
+
+            <button type="submit" className="text-white bg-[#A8201A] p-3 rounded-full mt-6 cursor-pointer hover:bg-[#470d0a]">Editar</button>
+                    
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditModal;
